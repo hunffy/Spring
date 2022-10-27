@@ -19,8 +19,8 @@
 	<td align="left">
 		<a href="detail?id=${item.id}">${item.name}</a></td>
 	<td align="right">${item.price}</td>
-	<td align="center"><a href="updateForm?id=${item.id}">수정</a></td>
-	<td align="center"><a href="deleteForm?id=${item.id}">삭제</a></td>
+	<td align="center"><a href="update?id=${item.id}">수정</a></td>
+	<td align="center"><a href="delete?id=${item.id}">삭제</a></td>
 	</tr>
 	</c:forEach>
 </table></body></html>

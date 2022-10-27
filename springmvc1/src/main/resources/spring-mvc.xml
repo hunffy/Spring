@@ -37,6 +37,28 @@
   <property name="suffix"><value>.jsp</value></property>
 </bean>   
 
+<!-- 파일 업로드 설정 
+	
+	요청시 enctype="multipart/form-data" 형식인 경우 작동시작.
+	p:maxUploadSize 	: 100M(메가) 최대 업로드 가능한 크기설정.
+	p:maxInMemorySize 	: 10M까지는 메모리에 파일의 내용 저장.
+	
+-->
+<bean id="multipartResolver"
+class="org.springframework.web.multipart.commons.CommonsMultipartResolver"
+p:maxUploadSize="104854600" p:maxInMemorySize="10485460"></bean>
+
+<!-- message 코드값을 저장한 properties 파일을 설정. : messages.properties
+     message 처리를 위한 설정  -->
+<bean id="messageSource"
+  class="org.springframework.context.support.ResourceBundleMessageSource">
+  <property name="basenames">
+    <list><value>messages</value></list>
+  </property>
+</bean>
+
+
+
 <!-- 예외처리 -->
 <bean id="exceptionHandler" 
      class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
