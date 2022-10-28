@@ -110,6 +110,12 @@
     <version>3.0.1</version>
 </dependency>
 
+<!-- AOP 설정-->
+<dependency>
+  <groupId>org.aspectj</groupId>
+  <artifactId>aspectjweaver</artifactId>
+  <version>1.9.6</version>
+</dependency>
 
 
   </dependencies>

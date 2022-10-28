@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import dao.ItemDao;
+import dao.UserDao;
 /*
  * @Component : 해당 클래스를 객체화
  * Service 기능 : Controller 와 Model 사이의 중간 역할의 클래스
@@ -20,6 +21,9 @@ public class ShopService {
 	
 	@Autowired //shopservice객체에 ItemDao 객체를 주입해.
 	private ItemDao itemDao;
+	
+	@Autowired
+	private UserDao userDao; //shopservice객체에 UserDao 객체를 주입해.
 
 	public List<Item> itemList() {
 		return itemDao.list();
@@ -84,6 +88,18 @@ public class ShopService {
 	
 	public void itemDelete(Integer id) {
 		itemDao.delete(id);
+	}
+
+	public void userInsert(User user) {
+		userDao.insert(user);
+	}
+
+	public void userSearch(@Valid User user) {
+		userDao.search(user);
+	}
+
+	public User getUser(String userid) {
+		return userDao.selectOne(userid);
 	}
 		
 }

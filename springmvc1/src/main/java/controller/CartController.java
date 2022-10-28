@@ -59,4 +59,12 @@ public class CartController {
 		mav.addObject("cart",cart);
 		return mav;
 	}
+	//AOP 클래스 : CartAspect 클래스
+	//로그인이 되어야 실행가능하도록 AOP 부분 추가하기
+	//장바구니에 주문상품이 없는 경우 실행 불가 AOP 부분 추가하기
+	
+	@RequestMapping("checkout")
+	public String checkout(HttpSession session) {
+		return null;
+	}
 }

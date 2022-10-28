@@ -21,10 +21,12 @@
 
 <!-- controller,logic,dao 패키지를 먼저 scan해서 
 	 @Component 를 가진 클래스의 객체 생성 ●1)-->
-<context:component-scan base-package="controller,logic,dao" />
+<context:component-scan base-package="controller,logic,dao,aop" />
 
 <!-- web 환경에서 객체 주입을 위한 설정 : @Autowired,@Controller... 기능 사용  -->
 <mvc:annotation-driven />
+<!-- AOP기능을 수행할수있도록 설정하는부분 -->
+<aop:aspectj-autoproxy />
 
 <!-- 뷰결정자 : jsp 페이지의 위치 지정  -->
 <bean id="viewResolver"
@@ -63,7 +65,7 @@ p:maxUploadSize="104854600" p:maxInMemorySize="10485460"></bean>
 <bean id="exceptionHandler" 
      class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
   <property name="exceptionMappings">
-    <value></value>
+    <value>exception.LoginException=exception</value>
   </property>
 </bean>
 </beans>
