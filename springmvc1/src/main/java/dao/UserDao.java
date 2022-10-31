@@ -47,4 +47,12 @@ public class UserDao {
 		//조회되는 결과가 없는경우: EmptyResultDataAccessException 예외 발생.
 		return template.queryForObject("select * from useraccount where userid=:userid", param, mapper);
 	}
+	public void update(User user) {
+		SqlParameterSource param =
+				new BeanPropertySqlParameterSource(user);
+		String sql = "update useraccount set username=:username,"
+				+ "birthday=:birthday, phoneno=:phoneno, postcode=:postcode,"
+				+ "address=:address, email=:email where userid=:userid";
+		template.update(sql, param);
+	}
 }

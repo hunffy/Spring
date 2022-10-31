@@ -30,8 +30,8 @@ function win_open(page) {
 <font color="red"><form:errors path="password" /></font></td></tr>
 <tr height="40px"><td colspan="2" class="w3-center">
 <button type="submit" class="w3-button w3-blue">로그인</button>
-<button onclick="location.href='join'" class="w3-button w3-blue">회원가입</button>
-<button onclick="win_open('idsearch')" class="w3-button w3-blue">아이디찾기</button>
-<button onclick="win_open('pwsearch')" class="w3-button w3-blue">비밀번호찾기</button>
+<button onclick="location.href='join'" class="w3-button w3-blue" type="button">회원가입</button>
+<button onclick="win_open('idsearch')" class="w3-button w3-blue" type="button">아이디찾기</button>
+<button onclick="win_open('pwsearch')" class="w3-button w3-blue" type="button">비밀번호찾기</button>
    </td></tr></table>
 </form:form></body></html>

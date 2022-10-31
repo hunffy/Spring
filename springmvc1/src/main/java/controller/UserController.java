@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import exception.LoginException;
 import logic.ShopService;
 import logic.User;
 
@@ -103,4 +104,64 @@ public class UserController {
 		session.invalidate();
 		return "redirect:login";
 	}
+	/*
+	 * AOP 설정하기 : UserLoginAspect 클래스의 userIdCheck 메서드로 구현하기.
+	 * 1.pointcut : UserController 클래스의 idCheck로 시작하는 메서드고, 
+	 *               마지막 매개변수의 id,session인 경우 
+	 * 2. 로그인 여부 검증
+	 *   - 로그인이 안된경우 로그인 후 거래하세요. 메세지 출력. login페이지 호출
+	 * 3. admin이 아니면서, 로그인 아이디와 파라미터 id값이 다른 경우
+	 *    본인만 거래 가능합니다. 메세지 출력. item/list 페이지 호출              
+	 */
+	
+	@RequestMapping("mypage")
+		public ModelAndView idCheckmypage(String id, HttpSession session) {
+		System.out.println("mypage 메서드 시작");
+		ModelAndView mav = new ModelAndView();
+		//회원정보를 조회하여 user 이름으로 뷰로 전달
+		User user = service.getUser(id);
+		
+		//주문정보를 조회하여 뷰에 전달 => 미완성
+		mav.addObject("user",user);
+		return mav;
+	}
+	@GetMapping("update")
+	public ModelAndView idCheckUser(String id, HttpSession session) {
+		System.out.println("mypage 메서드 시작");
+		ModelAndView mav = new ModelAndView();
+		User user = service.getUser(id);
+		mav.addObject("user",user);
+		return mav;
+	}
+	@PostMapping("update")
+	public ModelAndView idCheckUpdate(@Valid User user , BindingResult bresult, 
+			String userid , HttpSession session) {
+		ModelAndView mav = new ModelAndView();
+		
+		//유효성 검증
+		if(bresult.hasErrors()) {
+			mav.getModel().putAll(bresult.getModel());
+			bresult.reject("error.update.user");
+			return mav;
+		}
+		//비밀번호 검증 : 로그인된 정보의 비밀번호로 검증하기.
+		User loginUser = (User)session.getAttribute("loginUser");
+		if(!loginUser.getPassword().equals(user.getPassword())) {
+			mav.getModel().putAll(bresult.getModel());
+			bresult.reject("error.login.password");
+			return mav;
+		}
+		//비밀번호 일치인 경우: DB에 내용 수정
+		try {
+			service.userUpdate(user);
+			//session에 로그인 정보 수정
+			session.setAttribute("loginUser", user);
+			mav.setViewName("redirect:mypage?id="+user.getUserid());
+		}catch(Exception e) {
+			e.printStackTrace();
+			throw new LoginException("고객 정보 수정 실패","update?id="+user.getUserid());
+		}
+		return mav;
+	}
+	
 }

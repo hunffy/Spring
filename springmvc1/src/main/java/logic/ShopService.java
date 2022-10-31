@@ -101,6 +101,9 @@ public class ShopService {
 	public User getUser(String userid) {
 		return userDao.selectOne(userid);
 	}
+
+	public void userUpdate(User user) {
+		userDao.update(user);
+	}
 		
 }
-

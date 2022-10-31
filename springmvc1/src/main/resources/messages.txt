@@ -1,6 +1,7 @@
 ## src/main/resources/messages.txt => src/main/resources/messages.properties 변경
 error.login.password=비밀번호를 확인하세요.
 error.input.user=회원가입 입력항목을 확인하세요
+error.update.user=회원수정 입력항목을 확인하세요
 error.input.login=로그인 입력항목을 확인하세요
 typeMismatch.birthday=생년월일은 YYYY-MM-DD 형식으로 입력해 주세요
 error.duplicate.user=중복된 아이디 입니다.

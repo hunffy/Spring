@@ -16,10 +16,10 @@ import logic.User;
 public class UserLoginAspect {
 	/*
 	 * Pointcut : 핵심메서드의 선택 기준설정
-	 * ->("execution(* controller.User*.loginCheck*(..)) " 
+	 * ->execution(* controller.User*.loginCheck*(..)) " 
 	 * :controller패키지의 클래스 중 User로 시작하는 클래스의 메서드 중 loginCheck로 시작하는 (..) 매개변수와 상관없는 모든 메서드
 	 * 
-	 * + "&& args(..,session)") :
+	 * args(..,session) :
 	 * 메서드의 매개변수의 마지막 변수의 자료형이 HttpSession인 메서드를 선택
 	 * .. : 아무거나 상관없음.
 	 * 	
@@ -42,6 +42,22 @@ public class UserLoginAspect {
 			throw new LoginException	//예외발생
 				("[userlogin]로그인 후 거래 하세요","login");
 		}
-		return joinPoint.proceed(); //다음 메서드로 진행.(실행 전 후를 나눔)
+		return joinPoint.proceed(); //다음 메서드로 진행.(joinpoint.proceed기준 실행 전 후를 나눔)
 	}
+	@Around("execution(* controller.User*.idCheck*(..))"
+			+ "&& args(..,id,session)")
+	public Object userIdCheck(ProceedingJoinPoint joinPoint,
+			String id,HttpSession session) throws Throwable {
+		
+		//로그인 여부 검증
+		User loginUser = (User)session.getAttribute("loginUser");
+		if(loginUser == null) { //로그아웃된 상태
+			throw new LoginException("[IdCheck]로그인 후 거래하세요","login");
+		}//admin이 아니면서,로그인 아이디와 파라미터 id값이 다른 경우
+		if(!loginUser.getUserid().equals(id) && !loginUser.equals("admin")) {
+			throw new LoginException("[IdCheck]본인만 거래 가능합니다","../item/list");
+		}
+		return joinPoint.proceed();
+	}
+	
 }
