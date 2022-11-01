@@ -1,5 +1,7 @@
 package controller;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
@@ -11,6 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import exception.LoginException;
@@ -125,9 +128,8 @@ public class UserController {
 		mav.addObject("user",user);
 		return mav;
 	}
-	@GetMapping("update")
+	@GetMapping({"update","delete"})
 	public ModelAndView idCheckUser(String id, HttpSession session) {
-		System.out.println("mypage 메서드 시작");
 		ModelAndView mav = new ModelAndView();
 		User user = service.getUser(id);
 		mav.addObject("user",user);
@@ -164,4 +166,93 @@ public class UserController {
 		return mav;
 	}
 	
+	/* 탈퇴 검증
+	 * UserLoginAspect.userIdCheck() 메서드 실행 하도록 설정
+	 *
+	 * 회원탈퇴
+	 * 1.파라미터 정보 저장.
+	 *   - 관리자인 경우 탈퇴 불가
+	 * 2.비밀번호 검증 => 로그인된 비밀번호 검증 
+	 *   본인탈퇴 : 본인 비밀번호 
+	 *   관리자가 타인 탈퇴 : 관리자 비밀번호
+	 * 3.비밀번호 불일치 
+	 *   메세지 출력 후 delete 페이지 이동  
+	 * 4.비밀번호 일치
+	 *   db에서 해당 사용자정보 삭제하기
+	 *   본인탈퇴 : 로그아웃, login 페이지 이동
+	 *   관리자탈퇴 : admin/list 페이지 이동 => 404 오류 발생 
+	 */
+	@PostMapping("delete")
+	public ModelAndView idCheckdelete
+	//1.파라미터정보 저장
+		(String password, String userid , HttpSession session) {
+		ModelAndView mav = new ModelAndView();
+		//관리자인 경우 탈퇴불가
+		if(userid.equals("admin"))
+			throw new LoginException("관리자 탈퇴는 불가합니다.", "mypage?id="+userid);
+		//로그인된 비밀번호 검증
+		User loginUser = (User)session.getAttribute("loginUser");
+		//로그인된 비밀번호 검증: 불일치
+		if(!password.equals(loginUser.getPassword())) {
+			throw new LoginException("비밀번호를 확인하세요", "delete?id="+userid);
+		}
+		//로그인된 비밀번호 검증 : 일치
+		try {
+			service.userDelete(userid); //DB에서 해당 사용자정보 삭제
+		}catch(Exception e) {
+			e.printStackTrace();
+			throw new LoginException
+			("탈퇴시 오류발생","delete?id="+userid);
+		}
+		//탈퇴성공, 관리자 회원 강제탈퇴
+		if(loginUser.getUserid().equals("admin")) {
+			mav.setViewName("redirect:../admin/list");
+		}else{
+			mav.setViewName("redirect:login");
+			session.invalidate();
+		}
+		return mav;
+	}
+	@GetMapping("password")
+	public String loginCheckPassword(HttpSession session) {
+		return null;
+	}
+	/*
+	 * 1. 로그인 검증
+	 * 2. 파라미터값 Map 객체 저장
+	 * 	@RequestParam : 요청파라미터를 Map객체로 저장하도록하는 어노테이션
+	 * 	req.put("password",password의 파라미터값)
+	 * 	req.put("chgpass",chgpass의 파라미터값)
+	 * 	req.put("chgpass2",chgpass2의 파라미터값)
+	 * 
+	 * 3.현재 비밀번호와 입력된 비밀번호 검증
+	 * 	 불일치 : 오류메세지 출력. password 페이지이동
+	 * 4.비밀번호 일치: DB수정
+	 * 5.수정성공 : 로그인정보 변경, mypage 페이지이동
+	 *   수정실패 : 오류메세지 출력, password 페이지이동
+	 */
+	@PostMapping("password")
+	public String loginCheckPasswordRtn
+	(@RequestParam Map<String,String>req, HttpSession session) {
+		
+		//비밀번호 검증
+		User loginUser = (User)session.getAttribute("loginUser");
+		//req.get("password") : 입력된 현재 비밀번호
+		//loginUser.getPassword() : 등록된 비밀번호
+		if(!req.get("password").equals(loginUser.getPassword())) {
+			throw new LoginException("비밀번호 오류입니다.","password");
+		}
+		//비밀번호 일치
+		try {
+			//loginUser.getUserid() : 로그인 사용자 아이디
+			//req.get("chgpass") : 변경 할 비밀번호 입력값
+			service.userChgpass(loginUser.getUserid(),req.get("chgpass"));
+			
+			//로그인정보 변경(로그인된 유저 비밀번호 변경)
+			loginUser.setPassword(req.get("chgpass"));
+		}catch (Exception e) {
+			throw new LoginException("비밀번호 수정시 DB 오류입니다.","password");
+		}
+		return "redirect:mypage?id="+loginUser.getUserid();
+	}
 }

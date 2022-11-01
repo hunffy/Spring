@@ -11,8 +11,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Karma">
 <script type="text/javascript" 
 src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
 </script>
@@ -24,18 +23,19 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 <body class="w3-light-grey">
 
 <!-- Top container -->
-<div class="w3-bar w3-top w3-black w3-large" style="z-index:4">
-  <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey" onclick="w3_open();"><i class="fa fa-bars"></i> &nbsp;Menu</button>
-  <span class="w3-bar-item w3-right">
-  	<c:if test="${empty sessionScope.loginUser}">
-  	 <a href="${path}/user/login">로그인</a>
-  	 <a href="${path}/user/join">회원가입</a>
-  	</c:if>
-  	<c:if test="${!empty sessionScope.loginUser}">
-  	 ${sessionScope.loginUser.username}님이 로그인 하셨습니다.&nbsp;&nbsp;
-  	 <a href="${path}/user/logout">로그아웃</a>
-  	 </c:if>
-  </span>
+<div class="w3-top">
+  <div class="w3-white w3-xlarge" style="max-width:1200px;margin:auto">
+    <button class="w3-left w3-padding-16" onclick="location.href='test'">김점심2</button>
+    <button class="w3-right w3-padding-16" type="submit">로그인</button>
+    <div class="w3-center w3-padding-16" >
+    	<form action="url">
+            <div class="search">
+                <input type="text" name="query" value="" placeholder="검색어를 입력하세요">
+                <button type="submit" onclick="location.href=''" >검색</button>
+            </div>
+        </form>
+    </div>
+  </div>
 </div>
 
 <!-- Sidebar/menu -->
