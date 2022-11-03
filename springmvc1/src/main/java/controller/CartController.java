@@ -10,7 +10,9 @@ import org.springframework.web.servlet.ModelAndView;
 import logic.Cart;
 import logic.Item;
 import logic.ItemSet;
+import logic.Sale;
 import logic.ShopService;
+import logic.User;
 
 @Controller
 @RequestMapping("cart")
@@ -66,5 +68,29 @@ public class CartController {
 	@RequestMapping("checkout")
 	public String checkout(HttpSession session) {
 		return null;
+	}
+	/* 주문 확정 : end 요청
+	 * 1. 로그인, 장바구니상품 검증 필요 => aop로 설정. 
+	 * 2. 장바구니 상품을 saleitem 테이블에 저장하기
+	 * 3. 로그인 정보로 주문 정보(sale)테이블에 저장.
+	 * 4. 장바구니 상품 제거
+	 * 5. 주문 정보 end.jsp 페이지로 출력
+	 */
+	@RequestMapping("end")
+	//1. 로그인, 장바구니상품 검증 필요 => aop로 설정. (check* aop에의해 처리됨)
+	public ModelAndView checkend(HttpSession session) {
+		ModelAndView mav = new ModelAndView();
+		
+		//2. 장바구니 상품을 saleitem 테이블에 저장하기
+		Cart cart = (Cart)session.getAttribute("CART"); 			//장바구니정보
+		User loginUser = (User)session.getAttribute("loginUser");	//유저정보
+		
+		//3. 로그인 정보로 주문 정보(sale)테이블에 저장.
+		Sale sale = service.checkend(loginUser,cart);
+		
+		//4. 장바구니 상품 제거
+		session.removeAttribute("CART");
+		mav.addObject("sale",sale); //sale :사용자정보,장바구니정보
+		return mav;
 	}
 }

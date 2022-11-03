@@ -1,6 +1,7 @@
 package dao;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -66,5 +67,21 @@ public class UserDao {
 		param.put("password", pass);
 		template.update
 		("update useraccount set password=:password where userid=:userid", param);
+	}
+	public String search(User user, String url) { //user : 입력받은 데이터값 url:id면 id찾기데이터값
+																		// 	pw면 pw데이터값
+		String col = "userid";
+		if(url.equals("pw")) col = "password"; 
+		String sql = "select " + col + " from useraccount " //url이 id면 col=userid pw면 password
+				+ "where email=:email and phoneno=:phoneno";
+		if(url.equals("pw")) {
+			sql += " and userid=:userid";
+		}
+		SqlParameterSource param = 
+							new BeanPropertySqlParameterSource(user);
+		return template.queryForObject(sql, param, String.class);
+	}
+	public List<User> list() {
+		return template.query("select * from useraccount", param, mapper);
 	}
 }

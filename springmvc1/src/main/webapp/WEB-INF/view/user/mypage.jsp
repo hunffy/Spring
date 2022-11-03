@@ -16,7 +16,7 @@
 		$("#"+tab).addClass("select")	//id="tab1" 인 태그에 select class속성을 추가
 	}
 	function list_disp(id) {
-		$("#"+id).toggle()
+		$("#"+id).toggle() //jquery 함수: 보였다,안보였다 하게하는기능.
 	}
 </script>
 <style type="text/css">
@@ -59,7 +59,7 @@
 	<table class="w3-table">
 		<tr><th width ="25%">상품명</th><th width="25%">상품가격</th>
 	  <th width="25%">구매수량</th><th width="25%">상품총액</th></tr>
-	  	<c:forEach items="${sale.itemlist}" var="saleItem">
+	  	<c:forEach items="${sale.itemList}" var="saleItem">
 	  		<tr><td class="title">${saleItem.item.name}</td>
 	  			<td>
 <fmt:formatNumber value="${saleItem.item.price}" pattern="#,###"/>원</td>
@@ -87,5 +87,5 @@ value="${saleItem.quantity*saleItem.item.price}" pattern="#,###"/>원
  	 <a href="delete?id=${user.userid}">[회원탈퇴]</a>&nbsp;
  	</c:if>
  	<c:if test="${loginUser.userid == 'admin'}">
- 		<a href="../admin/list">[회원목록]</a>&nbps;
+ 		<a href="../admin/list">[회원목록]</a>&nbsp;
  	</c:if></div></body></html>

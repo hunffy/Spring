@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import dao.ItemDao;
+import dao.SaleDao;
+import dao.SaleItemDao;
 import dao.UserDao;
 /*
  * @Component : 해당 클래스를 객체화
@@ -24,6 +26,12 @@ public class ShopService {
 	
 	@Autowired
 	private UserDao userDao; //shopservice객체에 UserDao 객체를 주입해.
+	
+	@Autowired
+	private SaleDao saleDao;
+	
+	@Autowired
+	private SaleItemDao	saleItemDao;
 
 	public List<Item> itemList() {
 		return itemDao.list();
@@ -112,6 +120,63 @@ public class ShopService {
 
 	public void userChgpass(String userid, String pass) {
 		userDao.chgpass(userid, pass);
+	}
+
+	public String getSearch(User user, String url) {
+		return userDao.search(user,url);
+	}
+
+	public List<User> userlist() {
+		return userDao.list();
+	}
+	/*
+	 * 로그인정보, 장바구니 정보에서 sale,saleitem 테이블에 데이터 저장
+	 * 결과를 Sale객체로 저장
+	 * 1. sale 테이블의 saleid의 최대값 조회
+	 * 2. sale 테이블 saleid의 최대값+1, userid, sysdate 등록
+	 * 3. Cart 데이터에서 saleitem 데이터를 추출하여 저장.
+	 * 4. Sale 객체에 모든 데이터를 저장
+	 * 
+	 * 
+	 */
+	public Sale checkend(User loginUser, Cart cart) {
+		//1. sale 테이블의 saleid의 최대값 조회
+		int maxid = saleDao.getMaxSaleId();
+		
+		//2. sale 테이블 saleid의 최대값+1, userid, sysdate 등록
+		Sale sale = new Sale();
+		sale.setSaleid(maxid+1);
+		sale.setUserid(loginUser.getUserid());
+		sale.setUser(loginUser);
+		saleDao.insert(sale);//sale테이블에 DB저장
+		
+		//3. Cart 데이터에서 saleitem 데이터를 추출하여 저장. 주문상품에대한 등록
+		int seq = 0;
+		for(ItemSet is : cart.getItemSetList()) {
+			SaleItem saleItem = new SaleItem
+					(sale.getSaleid(),++seq,is);
+			sale.getItemList().add(saleItem);
+			saleItemDao.insert(saleItem); //saleitem 테이블에 저장
+		}
+		return sale; 
+	}
+
+	public List<Sale> salelist(String id) { //id 사용자정보
+		//list : sale테이블의 내용을 저장하고있음
+		List<Sale> list = saleDao.list(id); // id사용자가 주문한 정보목록 
+		for(Sale sa : list) {
+			//주문별 주문 상품 조회
+			List<SaleItem> saleitemlist = 
+							saleItemDao.list(sa.getSaleid());
+			//SaleItem 객체에 Item객체 저장하기위한 부분
+			for(SaleItem si : saleitemlist) {
+				Item item = itemDao.getItem(si.getItemid());
+				si.setItem(item); //상품별로 한건한건 읽어서 Item객체를 SaleItem객체에 추가.
+			}
+			//Sale객체에 SaleItem 목록을 추가.
+			sa.setItemList(saleitemlist);
+		}
+		return list;
 	}
 		
 }
