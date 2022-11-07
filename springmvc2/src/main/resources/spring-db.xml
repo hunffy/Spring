@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- /src/main/resources/spring-db.xml -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:p="http://www.springframework.org/schema/p"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+   http://www.springframework.org/schema/beans/spring-beans.xsd
+   http://www.springframework.org/schema/context
+   http://www.springframework.org/schema/context/spring-context.xsd
+   http://www.springframework.org/schema/aop
+   http://www.springframework.org/schema/aop/spring-aop.xsd">
+   <!-- Connection Pool 객체  -->
+   <bean id="dataSource" 
+      class="com.mchange.v2.c3p0.ComboPooledDataSource"
+      destroy-method="close">
+    <property name="driverClass">
+       <value>oracle.jdbc.OracleDriver</value></property>
+    <property name="jdbcUrl">
+       <value>jdbc:oracle:thin:@localhost:1521:xe</value></property>
+    <property name="user"><value>kic</value></property>
+    <property name="password"><value>1234</value></property>
+    <!-- 최대 연결 객체 갯수 -->    
+    <property name="maxPoolSize"><value>20</value></property>
+    <!-- 최소 연결 객체 갯수 -->
+    <property name="minPoolSize"><value>3</value></property>
+    <!-- 초기 연결 객체 갯수 -->
+    <property name="initialPoolSize"><value>5</value></property>
+    <!-- 연결 객체 증가 갯수 -->
+    <property name="acquireIncrement"><value>5</value></property>
+   </bean>
+   <!-- mybatis 관련 설정 -->
+   <bean id="sqlSessionFactory" 
+       class="org.mybatis.spring.SqlSessionFactoryBean">
+       <!-- Connection 객체 설정 -->
+       <property name="dataSource" ref="dataSource" />
+       <!-- sql 구문 설정한 파일 설정 -->
+       <property name="configLocation" 
+       value="classpath:mybatis-config.xml" />       
+   </bean>
+   <!-- sql 문장 실행을 위한 session 객체 -->
+   <bean id="sqlSessionTemplate" 
+      class="org.mybatis.spring.SqlSessionTemplate">
+  <!-- SqlSessionTemplate 클래스의 생성자 sqlSessionFactory 객체 주입 -->
+      <constructor-arg ref="sqlSessionFactory" />
+   </bean>
+
+</beans>
