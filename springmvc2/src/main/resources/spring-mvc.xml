@@ -66,5 +66,13 @@ p:maxUploadSize="104854600" p:maxInMemorySize="10485460"></bean>
     </value>
   </property>
 </bean>
+<!-- 인터셉터 설정 -->
+<mvc:interceptors>
+	<mvc:interceptor>
+		<mvc:mapping path="/board/write"/>
+		<bean class="interceptor.BoardInterceptor" />
+	</mvc:interceptor>
+</mvc:interceptors>
+
 </beans>
   
