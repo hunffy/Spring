@@ -13,7 +13,8 @@ import logic.User;
 public class BoardInterceptor extends HandlerInterceptorAdapter{
 
 	@Override   //실행전 호출 메서드
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+	public boolean preHandle
+	  (HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 		HttpSession session = request.getSession(); //세션 객체
 		//boardid : 게시판 종류 

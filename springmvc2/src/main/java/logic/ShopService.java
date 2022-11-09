@@ -191,4 +191,23 @@ public class ShopService {
 	public void readcntadd(Integer num) {
 		boardDao.readcntadd(num);		
 	}
+	//파일업로드, db 수정
+	public void boardUpdate
+	        (Board board, HttpServletRequest request) {
+		//수정시 파일업로드가 발생됨. 첨부파일 수정됨 
+		if(board.getFile1()!=null && !board.getFile1().isEmpty()) {
+		  String path = request.getServletContext().getRealPath("/")
+					+ "board/file/";
+		  uploadFileCreate(board.getFile1(),path);
+		  board.setFileurl(board.getFile1().getOriginalFilename());
+		}
+		boardDao.update(board);
+	}
+
+	public void boardReply( Board board) {
+		 //순서지정. 원글에 grpstep보다 큰 grpstep을 가진 레코드의
+		//         grpstep의 값을 +1 수정 
+		boardDao.grpStepAdd(board);
+		boardDao.reply(board);
+	}
 }

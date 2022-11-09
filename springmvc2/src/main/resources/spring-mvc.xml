@@ -63,6 +63,7 @@ p:maxUploadSize="104854600" p:maxInMemorySize="10485460"></bean>
   <property name="exceptionMappings">
     <value>exception.LoginException=exception
            exception.ItemException=exception
+           exception.BoardException=exception
     </value>
   </property>
 </bean>

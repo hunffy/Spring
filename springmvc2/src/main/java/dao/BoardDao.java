@@ -46,4 +46,21 @@ public class BoardDao {
 	public void readcntadd(Integer num) {
 		template.getMapper(cls).readcntadd(num);		
 	}
+	public void update(Board board) {
+		template.getMapper(cls).update(board);		
+	}
+	public void grpStepAdd(Board board) {
+		template.getMapper(cls).getStepAdd(board);
+	}
+	//board : 원글정보 
+	//        num,grp,grplevel, grpstep, boardid
+	public void reply(Board board) {
+		board.setNum(maxNum()+1); //게시물번호를 최대값+1 변경 => 답글번호
+		//원글의 grplevel+1 => 답글의 grplevel
+		board.setGrplevel(board.getGrplevel() + 1);
+		//원글의 grpstep+1 =>  답글의 grpstep
+		board.setGrpstep(board.getGrpstep() + 1);
+		//
+		template.getMapper(cls).insert(board);
+	}
 }

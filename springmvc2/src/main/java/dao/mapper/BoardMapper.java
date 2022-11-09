@@ -33,9 +33,21 @@ public interface BoardMapper {
 + "0,#{grp},#{grplevel},#{grpstep},#{boardid},#{ip})")
 	void insert(Board board);
 
-	@Select("select * from board where num=#{num}")
+	String cols = "num,writer,pass,subject,content,file1 fileurl,"
+			+ "regdate,readcnt,grp,grplevel,grpstep,boardid,ip";
+	
+	@Select("select "+cols+" from board where num=#{num}")
 	Board selectOne(Integer num);
     @Update
     ("update board set readcnt = readcnt+1 where num=#{num}")
 	void readcntadd(Integer num);
+
+    @Update("update board set writer=#{writer},subject=#{subject},"
+    		+ "content=#{content}, file1=#{fileurl}"
+    		+ " where num=#{num}")
+	void update(Board board);
+
+    @Update("update board set grpstep = grpstep + 1"
+    		+ " where grp=#{grp} and grpstep > #{grpstep}")
+	void getStepAdd(Board board);
 }

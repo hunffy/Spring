@@ -17,7 +17,7 @@ public class Board {
 	private String subject;
 	@NotEmpty(message="내용를 입력하세요")
 	private String content;
-	private MultipartFile file1;
+	private MultipartFile file1; //file1의 이름으로 업로드된 파일내용 저장
 	private String fileurl; //getter, setter
 	private String ip;
 	private Date regdate;

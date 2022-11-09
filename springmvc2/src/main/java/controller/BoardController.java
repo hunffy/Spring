@@ -2,6 +2,7 @@ package controller;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import exception.BoardException;
 import logic.Board;
 import logic.ShopService;
 
@@ -31,6 +33,7 @@ public class BoardController {
 	public ModelAndView list
 	    (Integer pageNum, String boardid,HttpSession session) {
 		ModelAndView mav = new ModelAndView();
+
 		if(pageNum == null || pageNum.toString().equals("")) {
 			   pageNum = 1;  //pageNum 파라미터가 없는 경우 1로 설정
 		}
@@ -200,7 +203,7 @@ public class BoardController {
 		return "ckedit"; //뷰. /WEB-INF/view/ckedit.jsp
 	}
 	
-	@GetMapping("update")
+	@GetMapping({"update","reply","delete"})
 	public ModelAndView getBoard(Integer num,HttpSession session) {
 		ModelAndView mav = new ModelAndView();
 		String boardid = (String)session.getAttribute("boardid");
@@ -213,5 +216,75 @@ public class BoardController {
 		else if(boardid.equals("3"))
 			mav.addObject("boardName","QNA");
 		return mav;
+	}
+	@PostMapping("update")
+	public ModelAndView update
+	        (@Valid Board board,BindingResult bresult,
+			   HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView();
+		if(bresult.hasErrors()) {
+			mav.getModel().putAll(bresult.getModel());
+			return mav;
+		}
+		//비밀번호 검증
+		Board dbBoard =	service.getBoard(board.getNum());
+		//board.getPass() : 입력된 비밀번호
+		//dbBoard.getPass() : db테이블의 비밀번호. 저장된 비밀번호
+		if(!board.getPass().equals(dbBoard.getPass())) {  
+			throw new BoardException
+			 ("비밀번호가 틀립니다.","update?num="+board.getNum());
+		}
+		//비밀번호가 일치하는 경우. 
+		try {
+			board.setFileurl(request.getParameter("file2"));
+			//파일업로드,db에 수정
+			service.boardUpdate(board, request);
+			mav.setViewName("redirect:detail?num="+board.getNum());
+		} catch (Exception e) { //수정시 오류 발생
+			e.printStackTrace();
+			throw new BoardException
+		  ("게시글 수정을 실패 했습니다.","update?num="+board.getNum());
+		}
+		return mav;
+	}	
+/*
+ * 1. 유효성 검사하기-파라미터값 저장. 
+ *     - 원글정보 : num,grp,grplevel,grpstep,boardid
+ *     - 답글정보 : writer,pass,subject,content
+ * 2. db에 insert => service.boardReply()
+ *     - 원글의 grpstep 보다 큰 이미 등록된 답글의 grpstep 값을 +1 
+ *       => boardDao.grpStepAdd()
+ *     - db에 insert  => boardDao.reply()
+ *       num : maxNum() + 1
+ *       grp : 원글과 동일
+ *       grplevel : 원글의 grplevel + 1    
+ *       grpstep : 원글의 grpstep + 1
+ * 3. 등록 성공 : list로 페이지 이동
+ *    등록 실패 : "답변 등록시 오류 발생" reply 페이지 이동           
+ */	
+	@PostMapping("reply")
+	public ModelAndView reply(@Valid Board board, 
+			BindingResult bresult,
+			HttpServletRequest request) {
+    	ModelAndView mav = new ModelAndView();
+    	if(bresult.hasErrors()) {
+    		Board dbboard = service.getBoard(board.getNum());
+    		Map<String,Object> map = bresult.getModel();
+    		Board b = (Board)map.get("board");
+    		b.setSubject(dbboard.getSubject());//원글의 제목으로 변경
+			mav.getModel().putAll(bresult.getModel());
+			return mav;
+    	}
+    	try {
+    	   board.setIp(request.getRemoteAddr());	
+    	   service.boardReply(board);
+    	   mav.setViewName
+    	   ("redirect:list?boardid="+board.getBoardid());
+    	} catch(Exception e) {
+    		e.printStackTrace();
+    		throw new BoardException("답변등록시 오류 발생",
+    				"reply?num="+board.getNum());
+    	}
+	    return mav;
 	}
 }
