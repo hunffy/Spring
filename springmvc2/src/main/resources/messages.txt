@@ -13,3 +13,4 @@ error.password.search=비밀번호를 찾을 수 없습니다.
 error.required.userid=아이디를 입력하세요
 error.required.email=EMAIL을 입력하세요
 error.required.phoneno=전화번호를 입력하세요
+error.required.password=비밀번호를 입력하세요

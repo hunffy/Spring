@@ -287,4 +287,39 @@ public class BoardController {
     	}
 	    return mav;
 	}
+	/*
+	 * 1. num, pass 파라미터 저장
+	 * 2. num의 게시물 읽기=> 비밀번호 검증
+	 *    비밀번호 오류 : error.login.password 입력 => 뷰에 전달.
+	 * 3. db에서 num값의 게시물을 삭제.
+	 *    삭제 성공 : list 페이지 이동
+	 *    삭제 실패 : delete 페이지로 이동   
+	 */
+	@PostMapping("delete")
+	public ModelAndView delete(Board board,BindingResult bresult) {
+		ModelAndView mav = new ModelAndView();
+		Board dbBoard = service.getBoard(board.getNum());
+		//비밀번호 입력이 안된경우
+		if(board.getPass() == null || 
+				    board.getPass().trim().equals("")) {
+			bresult.reject("error.required.password");
+			return mav;
+		}
+		//비밀번호 오류
+		if(!board.getPass().equals(dbBoard.getPass())) {
+			bresult.reject("error.login.password");
+			return mav;
+		}
+		//db에서 삭제
+		try {
+		   service.boardDelete(board.getNum());
+		   mav.setViewName
+		      ("redirect:list?boardid="+dbBoard.getBoardid());
+		} catch (Exception e) {
+		   e.printStackTrace();	
+		   throw new BoardException
+		   ("게시물 삭제시 오류 발생","delete?num="+board.getNum());
+		}
+		return mav;
+	}
 }

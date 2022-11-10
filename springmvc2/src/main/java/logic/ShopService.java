@@ -210,4 +210,8 @@ public class ShopService {
 		boardDao.grpStepAdd(board);
 		boardDao.reply(board);
 	}
+
+	public void boardDelete(Integer num) {
+		boardDao.delete(num);
+	}
 }

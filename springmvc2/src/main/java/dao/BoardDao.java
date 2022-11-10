@@ -63,4 +63,7 @@ public class BoardDao {
 		//
 		template.getMapper(cls).insert(board);
 	}
+	public void delete(Integer num) {
+		template.getMapper(cls).delete(num);
+	}
 }

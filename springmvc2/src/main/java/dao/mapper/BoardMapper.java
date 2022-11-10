@@ -3,6 +3,7 @@ package dao.mapper;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -50,4 +51,7 @@ public interface BoardMapper {
     @Update("update board set grpstep = grpstep + 1"
     		+ " where grp=#{grp} and grpstep > #{grpstep}")
 	void getStepAdd(Board board);
+
+    @Delete("delete from board where num=#{num}")
+	void delete(Integer num);
 }
