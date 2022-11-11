@@ -22,11 +22,11 @@ import logic.ShopService;
  *    메서드 리턴타입 : ModelAndView => 뷰의 이름 지정 + 데이터
  *     
  * @RestController : @Component + Controller 기능 + 
- *                   클라이언트에 값 전달시 뷰 없이 바로데이터로 전달 
+ *                   클라이언트에 값 전달시 뷰 없이 바로데이터로 전달  (모든메서드 적용할때)
  *    메서드 리턴타입 : String => 브라우저로 전달할 데이터 값.
  *    메서드 리턴타입 : Object => 브라우저로 전달할 데이터 값.
  *    spring 4.0 이후에 추가된 컨트롤러
- *    @ResponseBody 기능 : 메서드의 어노테이션으로 설정. 
+ *    @ResponseBody 기능 : 메서드의 어노테이션으로 설정. (해당 메서드만 적용할때)
  */
 @RestController
 @RequestMapping("ajax")
@@ -37,10 +37,19 @@ public class AjaxController {
 	@RequestMapping("select")
 	public List<String> select
 	   (String si,String gu,HttpServletRequest request) {
+		/*
+		 * BufferedReader : Reader -> 문자형 입력스트림
+		 * => readLine() 메서드를 멤버로 가진다.
+		 * -FilteredReader : 기존의 스트림에 필터기능 추가
+		 * 					 생성자에서 기존스트림을 제공해야함.
+		 */
 		BufferedReader fr = null;
+		//path : sido.txt 파일의 절대 경로
 		String path = request.getServletContext().getRealPath("/")
 				+ "file/sido.txt";
 		try {
+			//FileReader(path) : path 위치의 파일을 읽기 위한 스트림.
+			// fr : sido.txt 파일을 읽기위한 스트림 객체.
 			fr = new BufferedReader(new FileReader(path));
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -49,8 +58,8 @@ public class AjaxController {
 		//LinkedHashSet : 중복불가. 순서 유지 가능
 		Set<String> set = new LinkedHashSet<>();
 		String data = null;
-		//si,gu 파라미터값이 없는 경우
-		if(si==null && gu == null) {
+		//si,gu 파라미터값이 없는 경우 : 처음 화면 초기화시 파라미터값이 없는 경우
+		if(si==null && gu == null) { //시도 데이터들을 리턴
 			try {
 				//readLine() : 한줄씩 읽기
 				while((data=fr.readLine()) != null) {
@@ -98,6 +107,8 @@ public class AjaxController {
 	  List<String> list = new ArrayList<>(set);
 	  return list; //배열로 브라우저(ajax객체)에 전달
 	}
+	
+	
 	//produces : 클라이언트에 전달되는 데이터의 특징 설정.
 	// text/plain : 순수문자열.
 	// charset=utf-8 : 문자열의 인코딩방식 전달

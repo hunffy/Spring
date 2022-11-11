@@ -223,8 +223,8 @@ function w3_close() {
 	  })
 
   })
- function getText(name) {
-	let city = $("select[name='si']").val(); 
+ function getText(name) { // ex)서울시
+	let city = $("select[name='si']").val(); //city = 서울시 
 	let gu = $("select[name='gu']").val();  
 	let disname;
 	let toptext="구군을 선택하세요";
@@ -244,10 +244,13 @@ function w3_close() {
 	  type : "POST",    
 	  data : params,  			
 	  success : function(arr) {
+		  //데이터를 추가해야 하는 select 태그의 option 태그들을 전부 제거
 		  $("select[name="+disname+"] option").remove();
+		  //첫번째 option 객체 추가
 		  $("select[name="+disname+"]").append(function(){
 			  return "<option value=''>"+toptext+"</option>"
 		  })
+		  //arr: 서버에서 전송한 배열객체 
 		  $.each(arr,function(i,item) {
 			  $("select[name="+disname+"]").append(function(){
 				  return "<option>"+item+"</option>"
